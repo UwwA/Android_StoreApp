@@ -1,0 +1,181 @@
+<html>
+<head>
+	<title>Jquery Mobile - List View with count bubbles</title>
+	<link href='http://fonts.googleapis.com/css?family=Open+Sans:600' rel='stylesheet' type='text/css'>
+	<link rel="stylesheet" href="themes/jquery.mobile.icons.min.css" />
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.4/jquery.mobile-1.4.4.min.css">
+	<link rel="stylesheet" href="asd.css">
+
+	<script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+	<script src="http://code.jquery.com/mobile/1.4.4/jquery.mobile-1.4.4.min.js"></script>
+
+	<script type="text/javascript" src="cordova.js"></script>
+    <script type="text/javascript" src="js/index.js"></script>
+	<script type="text/javascript" charset="utf-8"></script>
+
+</head>
+<body>
+
+	
+<script>
+	
+document.addEventListener("deviceready", onDeviceReady, false);
+
+function onDeviceReady() {
+    // Now safe to use device APIs
+}
+	
+	
+
+$(document).ready(function(){
+
+
+	//Körs efter rensa har klickats
+	function onPrompt(results) {
+		if(results.buttonIndex = 1){
+			$("#main")[0].reset();
+			window.localStorage.removeItem('kundvagn');
+			navigator.notification.alert("Din kundvagn har rensats!",null,"Kundvagn");
+		}   
+	}
+	//Körs efter confirmDialog har klickats
+	function onPromptOrder(results) {
+		if(results.buttonIndex = 1){
+			$("#main")[0].reset();
+			window.localStorage.removeItem('kundvagn');
+			navigator.notification.alert("Din order har godkänts!",null,"Order");
+		} 
+	}
+
+
+	
+	
+	//Dialogruta för confirmDialog
+	$(document).on('click',"#confirmDialog",function (){
+		navigator.notification.confirm(
+		'Vill du skicka din order?',  // message
+		onPromptOrder,                  // callback to invoke
+		'Order',            // title
+		['Ok','Exit']        // buttonLabels
+               
+		);
+	});
+	
+	//Dialogruta för rensa
+	$('#rensa').click(function(){
+		window.localStorage.removeItem('kundvagn');
+		window.location.reload();
+		navigator.notification.confirm(
+			'Vill du rensa din kundvagn?',  // message
+			onPrompt,                  // callback to invoke
+			'Kundvagn',            // title
+			['Ok','Exit']        // buttonLabels
+		);		
+	
+	});
+	
+	
+	
+	
+
+
+	//Visar laddning för användaren
+	function showloader() {
+		$.mobile.loading( 'show', {
+			text: "Laddar kundvagn",
+			textVisible: "true",
+			theme: "b",
+			html: ""
+		});
+	};
+	
+	//Om användarens kundvagn är tom
+	if(window.localStorage.getItem('kundvagn')==null){
+		$('#main').html('<h1>Din kundvagn är tom</h1>');
+	}
+	//Om den inte är tom
+	else{
+	var localData = window.localStorage.getItem('kundvagn');
+	var str = localData.split(",");
+	str.pop();
+	//Hämta data från servern
+	$.ajax({
+		url: 'http://217.210.7.154/test.php',
+		dataType: 'jsonp',
+		jsonp: 'jsoncallback',
+		timeout: 5000,
+		success: function(data, status){
+			$.mobile.loading('hide');
+			var total = 0;
+			var adder = '';
+			//För varje värde i kundvagns-arrayen, jämför mot JSON-array med alla varor
+			$.each(str, function(key, value){
+		
+				$.each(data, function(i,item){ 
+					//Om ID matchar
+					if(item.id.indexOf(value) != -1){
+					
+						total += +item.discPrice;
+					
+						adder += '<li data-icon="false"><a href="#" ><img src="http://217.210.7.154/'+item.img+'">'+item.name+'<p>'+item.desc+'</p><span class="ui-li-count">'+item.discPrice+':-</span></a></li>';
+					}
+				
+				});
+			});
+			;
+		
+			adder += '<li data-icon="check"><a href="#" id="confirmDialog"><h2>Totalt pris: </h2>'+total+':-</a></li>';
+			$('#output').html(adder);
+			$('#output').listview('refresh');
+			
+		},
+		error: function(){
+			output.text('There was an error loading the data.');
+		},
+		beforeSend:function()
+		   {
+			
+			showloader();
+		   }
+	});
+	};
+});
+
+	
+	</script>	
+	
+	    <div data-role="header" data-theme="b">
+		<a href="index.html" data-icon="arrow-l" rel="external">Tillbaka</a>
+        <h1>Din kundvagn</h1>
+		<a href="#" data-icon="delete" data-rel="popup" id="rensa">Rensa</a>
+		</div>
+		
+			
+    <div data-role="content" id="main">
+
+	<h1>Varor i din kundvagn:</h1>
+
+			<ul data-role="listview" id="output" data-inset="true" data-filter-reveal="false" ></ul>
+
+	
+		     
+
+
+</div>
+		
+
+	 <div data-role="footer" data-position="fixed" data-theme="b">
+        <h1>Store App</h1>
+        </div>
+        
+			<div id="popupDelete" data-role="popup">
+			Suka
+			</div>
+	</div>
+		
+		
+		
+</body>
+</html>

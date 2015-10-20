@@ -1,0 +1,126 @@
+<html>
+<head>
+	<title>Jquery Mobile - List View with count bubbles</title>
+<link href='http://fonts.googleapis.com/css?family=Open+Sans:600' rel='stylesheet' type='text/css'>
+   <link rel="stylesheet" href="themes/turquoise.css" />
+  <link rel="stylesheet" href="themes/jquery.mobile.icons.min.css" />
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.4/jquery.mobile-1.4.4.min.css">
+<link rel="stylesheet" href="asd.css">
+
+<script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+<script src="http://code.jquery.com/mobile/1.4.4/jquery.mobile-1.4.4.min.js"></script>
+
+<script type="text/javascript" src="cordova.js"></script>
+        <script type="text/javascript" src="js/index.js"></script>
+		<script type="text/javascript" charset="utf-8"></script>
+
+	</head>
+<body>
+
+	
+	<script>
+	
+document.addEventListener("deviceready", onDeviceReady, false);
+
+function onDeviceReady() {
+    // Now safe to use device APIs
+}
+	
+	
+
+$(document).ready(function(){
+	
+	//När classen a.buy i en lista som ligger i output klickas
+	$(document).on("click", "#output li a.buy" ,function (event) {
+		
+		var newData = ($(this).attr('id')) + ',';
+		var old = localStorage.getItem('kundvagn');
+		if(old === null) old = "";
+		localStorage.setItem('kundvagn', old + newData);
+	}); 
+	
+	//Visar laddning
+	function showloader() {
+		$.mobile.loading( 'show', {
+			text: "Hämtar erbjudanden",
+			textVisible: "true",
+			theme: "b",
+			html: ""
+		});
+	};
+	
+	
+	//Hämtar alla varor där discountedPrice < originalPrice
+	$.ajax({
+		url: 'http://217.210.7.154/test3.php',
+		dataType: 'jsonp',
+		jsonp: 'jsoncallback',
+		timeout: 5000,
+		success: function(data, status){
+			$.mobile.loading('hide');
+
+			var adder = '';
+			$.each(data, function(i,item){ 
+
+					console.log("hit kom vi");
+					adder += '<li><a href="#"><img src="http://217.210.7.154/'+item.img+'">'+item.name+'<p>'+item.desc+'</p><span class="ui-li-count">'+item.discPrice+':-</span><span class="ui-li-count count-second"><del>'+item.price+':-</del></span></a><a href="#" class="buy" id="'+item.id+'"data-icon="shop"></a></li>';
+				
+				
+			});
+			;
+			console.log(adder);
+			$('#output').html(adder);
+			$('#output').listview('refresh');
+			
+		},
+		error: function(){
+			output.text('There was an error loading the data.');
+		},
+		beforeSend:function()
+		   {
+			
+			showloader();
+		   }
+	
+});
+});
+	
+	</script>	
+	
+	    <div data-role="header" data-theme="b">
+		<a href="index.html" data-icon="arrow-l" rel="external">Tillbaka</a>
+        <h1>Huvudmeny</h1>
+		</div>
+		
+			
+    <div data-role="content">
+
+	
+
+		
+			
+			
+			<ul data-role="listview" id="output" data-inset="true" data-filter-reveal="false" ></ul>
+			<div id="loader">
+			</div>
+
+	
+		     
+
+
+</div>
+		
+
+	 <div data-role="footer" data-position="fixed" data-theme="b">
+        <h1>Store App</h1>
+        </div>
+        
+			
+	</div>
+		
+		
+		
+</body>
+</html>

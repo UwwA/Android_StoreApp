@@ -1,0 +1,238 @@
+<html>
+<head>
+	<title>Jquery Mobile - List View with count bubbles</title>
+	<link href='http://fonts.googleapis.com/css?family=Open+Sans:600' rel='stylesheet' type='text/css'>
+
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.4/jquery.mobile-1.4.4.min.css">
+	<link rel="stylesheet" href="asd.css">
+	<script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+	<script src="http://code.jquery.com/mobile/1.4.4/jquery.mobile-1.4.4.min.js"></script>
+	<script type="text/javascript" src="cordova.js"></script>
+    <script type="text/javascript" src="js/index.js"></script>
+	<script type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>
+    
+	
+<script>
+	
+document.addEventListener("deviceready", onDeviceReady, false);
+
+function onDeviceReady() {
+    // Now safe to use device APIs
+}
+
+
+//http://stackoverflow.com/a/21556605 - Skalar contenten till skärmens höjd	
+$(document).on( "pagecontainershow", function(){
+	ScaleContentToDevice();
+    
+	$(window).on("resize orientationchange", function(){
+		ScaleContentToDevice();
+	})
+});
+	
+function ScaleContentToDevice(){
+    scroll(0, 0);
+    var content = $.mobile.getScreenHeight() - $(".ui-header").outerHeight() -         $(".ui-footer").outerHeight() - $(".ui-content").outerHeight() + $(".ui-content").height();
+    $(".ui-content").height(content);
+	console.log(content);
+	var fix = content/7;
+	$(".ui-block-a,.ui-block-b,.ui-block-c").css({"padding-top": fix,"padding-bottom": fix,"font-size": fix/4});
+
+}
+	
+
+	
+	
+$(document).ready(function(){
+	
+	
+	//Kollar om användaren är inloggad, är den detta gå vidare till kundvagnen
+	$('#kundvagn').click(function(){
+				
+			
+		if(window.localStorage.getItem('user')==null){
+			navigator.notification.alert("Du är inte inloggad!", null, "Varning!")
+		}
+			
+		else if(window.localStorage.getItem('user')!=null){
+			window.location.replace("kundvagn.html");
+		}
+
+	});
+	
+	//Kollar om användaren är inloggad, är den detta gå vidare till sökningen
+	$('#search').click(function(){
+				
+			
+		if(window.localStorage.getItem('user')==null){
+			navigator.notification.alert("Du är inte inloggad!", null, "Varning!")
+		}
+			
+		else if(window.localStorage.getItem('user')!=null){
+			window.location.replace("search.html");
+		}
+
+	});
+	
+	//Kollar om användaren är inloggad, är den detta gå vidare till erbjudanden
+	$('#offers').click(function(){
+				
+			
+		if(window.localStorage.getItem('user')==null){
+			navigator.notification.alert("Du är inte inloggad!", null, "Varning!")
+		}
+			
+		else if(window.localStorage.getItem('user')!=null){
+			window.location.replace("offers.html");
+		}
+
+	});
+	
+	//Kollar om användaren är inloggad, är den detta gå vidare till kontot
+	$('#konto').click(function(){
+				
+			
+		if(window.localStorage.getItem('user')==null){
+			navigator.notification.alert("Du är inte inloggad!", null, "Varning!")
+		}
+			
+		else if(window.localStorage.getItem('user')!=null){
+			window.location.replace("konto.html");
+		}
+
+	});
+	
+		
+	//Om användaren inte är inloggad visa login-rutan, annars logga ut användaren. Testanvändare - username: asd password: asd
+	$('#loginClick').click(function(){
+
+		if(window.localStorage.getItem('user')==null){
+
+			$( "#myPopupDialog" ).popup("open");
+		}
+
+		else if(window.localStorage.getItem('user')!=null){
+			navigator.notification.confirm("Du har loggat ut!", null, "Success!")
+			window.localStorage.removeItem('user');
+			$('#loginName').html('<span class="ui-btn ui-shadow ui-corner-all ui-icon-user ui-btn-icon-notext ui-btn-b ui-btn-inline"  /></span>Inte inloggad');
+			$('#loginClick').html('<span class="ui-btn ui-shadow ui-corner-all ui-icon-user ui-btn-icon-notext ui-btn-b ui-btn-inline"  /></span>Logga in');
+		}
+
+	});
+	
+	
+	
+
+	//Verifierar användaren
+	 $("#loginSubmit").submit(function(){	
+		  username=$("#name").val();
+		  password=$("#password").val();
+		 $.ajax({
+			type: "POST",
+			url: "http://217.210.7.154/test2.php",
+			data: "username="+username+"&password="+password,
+			success: function(html){  
+			if(html==true)    { //Om användaren kan verifieras
+				navigator.notification.confirm("Du har loggat in!", null, "Success!");
+				$("#loginClick").html('<span class="ui-btn ui-shadow ui-corner-all ui-icon-user ui-btn-icon-notext ui-btn-b ui-btn-inline"  /></span>Logga ut');
+				$("#myPopupDialog").popup("close");
+				$("#afterLogin").hide();
+				$("#loginSubmit")[0].reset();
+				//Sparar session lokalt
+				window.localStorage.setItem('user', username);
+				$("#loginName").html('<span class="ui-btn ui-shadow ui-corner-all ui-icon-user ui-btn-icon-notext ui-btn-b ui-btn-inline"  /></span>Inloggad som: '+username);
+			}
+			else  if(html==false)  {
+				navigator.notification.alert("Felaktiga inloggningsuppgifter",null,"Misslyckad inloggning");
+			}
+		   },
+		   beforeSend:function()
+		   {
+			$('#afterLogin').html('<img src="img/ajax-loader.gif">Autentiserar');
+		   }
+		  });
+		return false;
+	});
+});
+	
+</script>	
+	
+	
+	<div data-role="header" data-theme="b">
+        <h1>Huvudmeny</h1>
+    </div>
+	
+	
+    <div data-role="content">
+        <div class="ui-grid-a border-tlr">
+		
+            <div class="ui-block-a" id="search">
+				<a href="#" class="ui-btn ui-shadow ui-corner-all ui-icon-search ui-btn-icon-notext ui-btn-b ui-btn-inline"></a>
+				Sök
+			</div>
+			
+            <div class="ui-block-b" id="kundvagn">
+				<a href="#" class="ui-btn ui-shadow ui-corner-all ui-icon-shop ui-btn-icon-notext ui-btn-b ui-btn-inline"></a>
+				Kundvagn
+			</div>
+			
+			
+        </div>
+        <div class="ui-grid-a border-lr">
+            <div class="ui-block-a" id="offers">
+				<a href="#" class="ui-btn ui-shadow ui-corner-all ui-icon-bars ui-btn-icon-notext ui-btn-b ui-btn-inline"></a>Erbjudanden
+			</div>
+			
+            <div class="ui-block-b" id="konto">
+				<a href="#" class="ui-btn ui-shadow ui-corner-all ui-icon-tag ui-btn-icon-notext ui-btn-b ui-btn-inline"></a>
+				Konto
+			</div>
+
+        </div>
+
+        <div class="ui-grid-a border-blr">
+            <div class="ui-block-a" id="loginName">
+
+                                   <span class="ui-btn ui-shadow ui-corner-all ui-icon-user ui-btn-icon-notext ui-btn-b ui-btn-inline"  /></span> Inte inloggad</div>
+									
+									
+				
+            <div class="ui-block-b" id="loginClick">
+				<span class="ui-btn ui-shadow ui-corner-all ui-icon-user ui-btn-icon-notext ui-btn-b ui-btn-inline"  /></span>
+				Logga in
+			</div>
+
+
+        </div>
+    </div>
+    <div data-role="footer" data-position="fixed" data-theme="b">
+        <h1>Store App</h1>
+        </div>
+        
+		
+		<div data-role="popup" id="myPopupDialog">
+		<div data-role="header" data-theme="a">
+    <h1>Logga in</h1>
+    </div>
+		  <div data-role="main" class="ui-content"><form id="loginSubmit"><p>Användarnamn:<input type="text" name="name" id="name" /></p>
+  <p>Lösenord:<input type="password" name="password" id="password" /></p>
+              <input type="submit" name="login" value="Login" id="Login"/>
+</form>
+
+ <div id="afterLogin">
+ </div>
+ </div>
+
+			
+			
+	</div>
+		
+		
+		
+</body>
+</html>

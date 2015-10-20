@@ -1,0 +1,129 @@
+<html>
+<head>
+	<title>Jquery Mobile - List View with count bubbles</title>
+<link href='http://fonts.googleapis.com/css?family=Open+Sans:600' rel='stylesheet' type='text/css'>
+
+  <link rel="stylesheet" href="themes/jquery.mobile.icons.min.css" />
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.4/jquery.mobile-1.4.4.min.css">
+<link rel="stylesheet" href="asd.css">
+
+<script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+<script src="http://code.jquery.com/mobile/1.4.4/jquery.mobile-1.4.4.min.js"></script>
+
+<script type="text/javascript" src="cordova.js"></script>
+        <script type="text/javascript" src="js/index.js"></script>
+		<script type="text/javascript" charset="utf-8"></script>
+
+	</head>
+<body>
+
+	
+	<script>
+	
+	document.addEventListener("deviceready", onDeviceReady, false);
+
+function onDeviceReady() {
+    // Now safe to use device APIs
+}
+	
+	
+
+$(document).ready(function(){
+
+	//Om användaren trycker på lägga in i kundvagn (ikonen bredvid priset)
+	$(document).on("click", "#output li a.buy" ,function (event) {
+		alert("suka");
+		var newData = ($(this).attr('id')) + ',';
+		var old = localStorage.getItem('kundvagn');
+		if(old === null) old = "";
+		localStorage.setItem('kundvagn', old + newData);
+		navigator.notification.confirm("Du har lagt till en vara i kundvagnen!", null, "Success!")
+	
+	}); 
+	
+	//Visar laddning för användaren
+	function showloader() {
+
+		$.mobile.loading( 'show', {
+			text: "Laddar data",
+			textVisible: "true",
+			theme: "b",
+			html: ""
+		});
+	};
+	
+	//Hämtar varor från databasen
+	$('#sendForm').click(function (){
+		var searchTerm = $('#search-basic').val();
+
+		$.ajax({
+			url: 'http://217.210.7.154/test.php',
+			dataType: 'jsonp',
+			jsonp: 'jsoncallback',
+			timeout: 5000,
+			success: function(data, status){
+				$.mobile.loading('hide');
+
+				var adder = '';
+				$.each(data, function(i,item){ 
+					if(item.name.indexOf(searchTerm) != -1){
+						adder += '<li><a href="#"><img src="http://217.210.7.154/'+item.img+'">'+item.name+'<p>'+item.desc+'</p><span class="ui-li-count">'+item.discPrice+':-</span></a><a href="#" class="buy" id="'+item.id+'"data-icon="shop"></a></li>';
+					}
+				
+				});
+			;
+
+				$('#output').html(adder);
+				$('#output').listview('refresh');
+			
+			},
+			error: function(){
+				output.text('There was an error loading the data.');
+			},
+			beforeSend:function()
+			{
+				showloader();
+			}
+		});
+	});
+});
+	
+	</script>	
+	
+	    <div data-role="header" data-theme="b">
+		<a href="index.html" data-icon="arrow-l" rel="external">Tillbaka</a>
+        <h1>Huvudmeny</h1>
+		</div>
+		
+			
+    <div data-role="content">
+
+	
+
+			<input type="search" name="search" id="search-basic" value="" />
+			
+			<input type="button" name="login" value="Sök" id="sendForm"/>
+			<ul data-role="listview" id="output" data-inset="true" data-filter-reveal="false" ></ul>
+			<div id="loader">
+			</div>
+
+	
+		     
+
+
+</div>
+		
+
+	 <div data-role="footer" data-position="fixed" data-theme="b">
+        <h1>Store App</h1>
+        </div>
+        
+			
+	</div>
+		
+		
+		
+</body>
+</html>

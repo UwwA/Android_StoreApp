@@ -1,0 +1,74 @@
+html, body,.content{
+    height: 100%;
+}
+html {
+	height: 100%;
+}
+body {
+	margin: 0;
+	padding: 0;
+	height: 100%;
+}
+.landscape, .landscape .ui-page, .portrait, .portrait .ui-page {
+	min-height: 100%;
+}
+
+#afterLogin{
+	text-align:center;
+}
+
+
+
+.border-tlr{
+    height:33%;
+    border-bottom: solid 5px #CFCFCF;
+}
+
+.border-lr{
+    height:33%;
+    text-align: center;
+    vertical-align:middle;
+    border-bottom: solid 5px #CFCFCF;
+
+
+}
+img{
+	
+   display: block;
+   margin:auto;
+}
+
+.border-blr{
+            vertical-align:middle;
+
+    height:33%;
+    
+}
+
+
+
+.count-second {
+    right: 70px !important;
+}
+.ui-block-a
+{  
+    font-family: 'Open Sans', sans-serif;
+    font-size:35px;
+	line-height: 100%;
+    text-align: center;
+    border-right: solid 5px #CFCFCF;   
+}
+.ui-block-b
+{    
+            font-family: 'Open Sans', sans-serif;
+	    font-family: 'Open Sans', sans-serif;
+    font-size:35px;
+	line-height: 100%;
+	
+    text-align:center;
+    height:100%;
+
+}
+
+
+}
